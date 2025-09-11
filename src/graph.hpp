@@ -1,3 +1,5 @@
+#pragma once
+
 #include <unordered_set>
 #include <unordered_map>
 #include <stdexcept>
@@ -23,14 +25,15 @@ namespace graph
   template <typename N, typename Hash = std::hash<N>>
   struct pair_hash {
     std::size_t operator()(const std::pair<N, N>& v) const {
-      std::size_t v1 = v.first;
-      std::size_t v2 = v.second;
+      std::size_t v1 = Hash(v.first);
+      std::size_t v2 = Hash(v.second);
       return v2 + 0x9e3779b9 + (v1<<6) + (v1 >> 2);
     }
   };
+
   template <typename N, typename Equal = std::equal_to<N>>
   struct pair_eq {
-    bool operator()(const std::pair<N, N>& lhs, const std::pair<N, N>& rhs) const {
+    bool operator()(const std::pair<N, N>& lhs, const std::pair<N, N>& rhs) const{
       return Equal()(lhs.first, rhs.first) && Equal()(lhs.second, rhs.second);
     }
   };
@@ -42,7 +45,7 @@ namespace graph
     using node_data_t = NodeData<N, ND, Hash, Equal>;
     using pair_data_t = NodeData<edge_t, ED, pair_hash<N, Hash>, pair_eq<N, Equal>>;
     std::unordered_map<N, node_data_t> m_nodes{};
-    std::unordered_map<edge_t, pair_data_t> m_edges{};
+    std::unordered_map<edge_t, pair_data_t, pair_hash<N, Hash>, pair_eq<N, Equal>> m_edges{};
 
     Graph() : m_nodes(), m_edges() {}
     void add_node(N n, ND d) {
