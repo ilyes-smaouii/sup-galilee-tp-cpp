@@ -1,5 +1,6 @@
 #include <unordered_set>
 #include <unordered_map>
+#include <stdexcept>
 
 namespace graph
 {
@@ -49,7 +50,19 @@ namespace graph
       m_nodes.insert(std::make_pair(n, node_data));
     }
     void add_edge(N pred, N succ, ED d) {
-      // preds and succs !
+      auto pred_iter = m_nodes.find(pred);
+      auto succ_iter = m_nodes.find(succ);
+      if (pred_iter != m_nodes.end() && succ_iter != m_nodes.end()) {
+        auto pair_data = pair_data_t(d);
+        // insert edge
+        m_edges.insert(std::make_pair(std::make_pair(pred, succ), pair_data));
+        // update succ and pred
+        pred_iter->second.add_succ(succ);
+        succ_iter->second.add_pred(pred);
+      }
+      else {
+        throw std::runtime_error("add_edge() error : pred or succ missing from m_nodes !");
+      }
     }
   };
   
