@@ -1,7 +1,8 @@
 # sup-galilee-tp-cpp
 TP de C++ pour Sup Galilée\
-Some C++ coding exercise I had to do for school. I've mostly used English in this repo, but you might
-find some stuff in French too. Haven't really set a rule for myself, here.
+Some C++ coding exercise I had to do for school, and which I'm re-doing from scratch.
+I've mostly used English in this repo, but you might
+find some stuff in French too. Haven't really set a rule for myself here.
 
 ## Journal/misc
 ### 2025/09/11
