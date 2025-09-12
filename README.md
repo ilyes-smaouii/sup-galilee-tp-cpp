@@ -8,4 +8,4 @@ find some stuff in French too. Haven't really set a rule for myself here.
 ### 2025/09/11
 Just realized the instructions indicated the use of C++17, but I'm using `std::format` in my code, which
 is C++20. The instructions say that so that you have to use `unordered_map`'s `find()` method rather
-than `contains()`. I've decided to follow the latter, but I'm to keep `std::format` nonetheless.
+than `contains()`. I've decided to follow the latter, but I'm maintaining the use of `std::format` nonetheless.
