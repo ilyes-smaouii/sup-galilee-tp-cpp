@@ -12,15 +12,19 @@ namespace pilelivre {
   Person::Person(std::string name) : m_name(name) {}
   
   void Person::add_action(Action* action_ptr) {
+    // add action to person's list
     m_action.push_back(action_ptr);
+    // Check if it's a Friend-related action
     auto friend_add_ptr = dynamic_cast<FriendAdd*>(action_ptr);
     if (friend_add_ptr != NULL) {
+      // add friend to this' friends, and this to friend's friends
       m_friends.push_back(friend_add_ptr->m_person);
       friend_add_ptr->m_person->m_friends.push_back(this);
     }
     else {
       auto friend_remove_ptr = dynamic_cast<FriendRemove*>(action_ptr);
       if (friend_remove_ptr != NULL) {
+        // remove friend from this' friends, and this from friend's friends
         m_friends.remove(friend_remove_ptr->m_person);
         friend_remove_ptr->m_person->m_friends.remove(this);
       }
