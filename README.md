@@ -9,3 +9,9 @@ find some stuff in French too. Haven't really set a rule for myself here.
 Just realized the instructions indicated the use of C++17, but I'm using `std::format` in my code, which
 is C++20. The instructions say that so that you have to use `unordered_map`'s `find()` method rather
 than `contains()`. I've decided to follow the latter, but I'm maintaining the use of `std::format` nonetheless.
+
+### 2025/09/17
+Just realized/remembered the instructions for this had some mistakes in, which confused me for a bit.\
+\+ It feels like the the explanation is a little obfuscated on purpose, which makes sense for a teacher
+wanting to evaluate their students' abilities, but also a little frustrating, especially in combination
+with the mistakes that find their way into the given instructions every now and then.
