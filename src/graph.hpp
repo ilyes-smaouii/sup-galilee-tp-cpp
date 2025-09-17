@@ -135,7 +135,7 @@ typename struct_next<N, ND, ED, Hash, Equal>::iterator_t
 struct_next<N, ND, ED, Hash, Equal>::begin() {
   auto prev_iter = _g.m_nodes.find(_prev);
   if (prev_iter == _g.m_nodes.end()) {
-    return set_t::iterator();
+    return iterator_t();
   } else {
     return prev_iter->second.m_succs.begin();
   }
