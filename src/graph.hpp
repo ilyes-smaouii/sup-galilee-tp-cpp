@@ -1,5 +1,6 @@
 #pragma once
 
+#include <concepts>
 #include <stdexcept>
 #include <unordered_map>
 #include <unordered_set>
@@ -19,8 +20,8 @@ struct NodeData {
 template <typename N, typename Hash = std::hash<N>>
 struct pair_hash {
   std::size_t operator()(const std::pair<N, N> &v) const {
-    std::size_t v1 = Hash(v.first);
-    std::size_t v2 = Hash(v.second);
+    std::size_t v1 = Hash()(v.first);
+    std::size_t v2 = Hash()(v.second);
     return v2 + 0x9e3779b9 + (v1 << 6) + (v1 >> 2);
   }
 };
@@ -41,28 +42,38 @@ template <typename N, typename ND, typename ED, typename Hash, typename Equal>
 struct struct_next {
   using set_t = std::unordered_set<N, Hash, Equal>;
   using iterator_t = typename set_t::iterator;
-  Graph<N, ND, ED> const &_g;
+  // using iterator_t =
+  //     decltype(Graph<N, ND, ED, Hash,
+  //     Equal>::node_data_t::m_succs)::iterator;
+  static_assert(
+      std::same_as<typename set_t::iterator,
+                   typename decltype(Graph<N, ND, ED, Hash, Equal>::
+                                         node_data_t::m_succs)::iterator>,
+      "Error : both types should be equivalent !");
+  using const_iterator_t = typename set_t::const_iterator;
+  Graph<N, ND, ED, Hash, Equal> * const _g;
   const N _prev;
-  struct_next(Graph<N, ND, ED> const &graph, const N prev)
+  struct_next(Graph<N, ND, ED> *graph, const N prev)
       : _g(graph), _prev(prev) {}
   iterator_t begin();
   iterator_t end();
-  iterator_t begin() const;
-  iterator_t end() const;
+  const_iterator_t begin() const;
+  const_iterator_t end() const;
 };
 
 template <typename N, typename ND, typename ED, typename Hash, typename Equal>
 struct struct_pred {
   using set_t = std::unordered_set<N, Hash, Equal>;
   using iterator_t = typename set_t::iterator;
-  Graph<N, ND, ED> const &_g;
+  using const_iterator_t = typename set_t::const_iterator;
+  Graph<N, ND, ED, Hash, Equal> * const _g;
   const N _next;
-  struct_pred(Graph<N, ND, ED> const &graph, const N next)
+  struct_pred(Graph<N, ND, ED> *graph, const N next)
       : _g(graph), _next(next) {}
   iterator_t begin();
   iterator_t end();
-  iterator_t begin() const;
-  iterator_t end() const;
+  const_iterator_t begin() const;
+  const_iterator_t end() const;
 };
 
 template <typename N, typename ND, typename ED, typename Hash, typename Equal>
@@ -115,16 +126,16 @@ struct Graph {
     }
   }
   struct_next<N, ND, ED, Hash, Equal> next(N node) {
-    return struct_next<N, ND, ED, Hash, Equal>(*this, node);
+    return struct_next<N, ND, ED, Hash, Equal>(this, node);
   }
   const struct_next<N, ND, ED, Hash, Equal> next(N node) const {
-    return struct_next<N, ND, ED, Hash, Equal>(*this, node);
+    return struct_next<N, ND, ED, Hash, Equal>(this, node);
   }
   struct_pred<N, ND, ED, Hash, Equal> pred(N node) {
-    return struct_pred<N, ND, ED, Hash, Equal>(*this, node);
+    return struct_pred<N, ND, ED, Hash, Equal>(this, node);
   }
   const struct_pred<N, ND, ED, Hash, Equal> pred(N node) const {
-    return struct_pred<N, ND, ED, Hash, Equal>(*this, node);
+    return struct_pred<N, ND, ED, Hash, Equal>(this, node);
   }
 };
 
@@ -133,9 +144,9 @@ struct Graph {
 template <typename N, typename ND, typename ED, typename Hash, typename Equal>
 typename struct_next<N, ND, ED, Hash, Equal>::iterator_t
 struct_next<N, ND, ED, Hash, Equal>::begin() {
-  auto prev_iter = _g.m_nodes.find(_prev);
-  if (prev_iter == _g.m_nodes.end()) {
-    return iterator_t();
+  auto prev_iter = _g->m_nodes.find(_prev);
+  if (prev_iter == _g->m_nodes.end()) {
+    return {};
   } else {
     return prev_iter->second.m_succs.begin();
   }
@@ -144,31 +155,31 @@ struct_next<N, ND, ED, Hash, Equal>::begin() {
 template <typename N, typename ND, typename ED, typename Hash, typename Equal>
 typename struct_next<N, ND, ED, Hash, Equal>::iterator_t
 struct_next<N, ND, ED, Hash, Equal>::end() {
-  auto prev_iter = _g.m_nodes.find(_prev);
-  if (prev_iter == _g.m_nodes.end()) {
-    return set_t::iterator();
+  auto prev_iter = _g->m_nodes.find(_prev);
+  if (prev_iter == _g->m_nodes.end()) {
+    return {};
   } else {
     return prev_iter->second.m_succs.end();
   }
 }
 
 template <typename N, typename ND, typename ED, typename Hash, typename Equal>
-typename struct_next<N, ND, ED, Hash, Equal>::iterator_t
+typename struct_next<N, ND, ED, Hash, Equal>::const_iterator_t
 struct_next<N, ND, ED, Hash, Equal>::begin() const {
-  auto prev_iter = _g.m_nodes.find(_prev);
-  if (prev_iter == _g.m_nodes.end()) {
-    return set_t::iterator();
+  auto prev_iter = _g->m_nodes.find(_prev);
+  if (prev_iter == _g->m_nodes.end()) {
+    return {};
   } else {
     return prev_iter->second.m_succs.begin();
   }
 }
 
 template <typename N, typename ND, typename ED, typename Hash, typename Equal>
-typename struct_next<N, ND, ED, Hash, Equal>::iterator_t
+typename struct_next<N, ND, ED, Hash, Equal>::const_iterator_t
 struct_next<N, ND, ED, Hash, Equal>::end() const {
-  auto prev_iter = _g.m_nodes.find(_prev);
-  if (prev_iter == _g.m_nodes.end()) {
-    return set_t::iterator();
+  auto prev_iter = _g->m_nodes.find(_prev);
+  if (prev_iter == _g->m_nodes.end()) {
+    return {};
   } else {
     return prev_iter->second.m_succs.end();
   }
@@ -179,9 +190,9 @@ struct_next<N, ND, ED, Hash, Equal>::end() const {
 template <typename N, typename ND, typename ED, typename Hash, typename Equal>
 typename struct_pred<N, ND, ED, Hash, Equal>::iterator_t
 struct_pred<N, ND, ED, Hash, Equal>::begin() {
-  auto prev_iter = _g.m_nodes.find(_next);
-  if (prev_iter == _g.m_nodes.end()) {
-    return set_t::iterator();
+  auto prev_iter = _g->m_nodes.find(_next);
+  if (prev_iter == _g->m_nodes.end()) {
+    return {};
   } else {
     return prev_iter->second.m_preds.begin();
   }
@@ -190,31 +201,31 @@ struct_pred<N, ND, ED, Hash, Equal>::begin() {
 template <typename N, typename ND, typename ED, typename Hash, typename Equal>
 typename struct_pred<N, ND, ED, Hash, Equal>::iterator_t
 struct_pred<N, ND, ED, Hash, Equal>::end() {
-  auto prev_iter = _g.m_nodes.find(_next);
-  if (prev_iter == _g.m_nodes.end()) {
-    return set_t::iterator();
+  auto prev_iter = _g->m_nodes.find(_next);
+  if (prev_iter == _g->m_nodes.end()) {
+    return {};
   } else {
     return prev_iter->second.m_preds.end();
   }
 }
 
 template <typename N, typename ND, typename ED, typename Hash, typename Equal>
-typename struct_pred<N, ND, ED, Hash, Equal>::iterator_t
+typename struct_pred<N, ND, ED, Hash, Equal>::const_iterator_t
 struct_pred<N, ND, ED, Hash, Equal>::begin() const {
-  auto prev_iter = _g.m_nodes.find(_next);
-  if (prev_iter == _g.m_nodes.end()) {
-    return set_t::iterator();
+  auto prev_iter = _g->m_nodes.find(_next);
+  if (prev_iter == _g->m_nodes.end()) {
+    return {};
   } else {
     return prev_iter->second.m_preds.begin();
   }
 }
 
 template <typename N, typename ND, typename ED, typename Hash, typename Equal>
-typename struct_pred<N, ND, ED, Hash, Equal>::iterator_t
+typename struct_pred<N, ND, ED, Hash, Equal>::const_iterator_t
 struct_pred<N, ND, ED, Hash, Equal>::end() const {
-  auto prev_iter = _g.m_nodes.find(_next);
-  if (prev_iter == _g.m_nodes.end()) {
-    return set_t::iterator();
+  auto prev_iter = _g->m_nodes.find(_next);
+  if (prev_iter == _g->m_nodes.end()) {
+    return {};
   } else {
     return prev_iter->second.m_preds.end();
   }

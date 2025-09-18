@@ -15,3 +15,6 @@ Realized/remembered the instructions for this had some mistakes in, which confus
 \+ It feels like the whole thing is a little obfuscated on purpose, which makes sense for a teacher
 wanting to evaluate their students' abilities, but also a little frustrating, especially in combination
 with the mistakes that find their way into the given instructions every now and then.
+
+### 2025/09/18
+Finished exo 3, on to exo 4.

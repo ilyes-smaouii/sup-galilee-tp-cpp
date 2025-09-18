@@ -81,9 +81,30 @@ int main (int argc, char *argv[]) {
   graph_t new_graph{};
   new_graph.add_node("James", new_nd.m_data);
   new_graph.add_node("Jack", new_nd.m_data);
+  new_graph.add_node("Alice", new_nd.m_data);
+  new_graph.add_node("Bob", new_nd.m_data);
   new_graph.add_edge("James", "Jack", 1);
+  new_graph.add_edge("James", "Alice", 1);
+  new_graph.add_edge("James", "Bob", 1);
+  new_graph.add_edge("Alice", "Bob", 1);
   auto le_next = new_graph.next("James");
+  std::cout << "James' next :" << std::endl;
   for (auto iter = le_next.begin(); iter != le_next.end(); iter++) {
+    std::cout << *iter << std::endl;
+  }
+  auto le_pred = new_graph.pred("Bob");
+  std::cout << "Bob's pred :" << std::endl;
+  for (auto iter = le_pred.begin(); iter != le_pred.end(); iter++) {
+    std::cout << *iter << std::endl;
+  }
+  auto le_pred_james = new_graph.pred("James");
+  std::cout << "James' pred :" << std::endl;
+  for (auto iter = le_pred_james.begin(); iter != le_pred_james.end(); iter++) {
+    std::cout << *iter << std::endl;
+  }
+  auto le_pred_dan = new_graph.pred("Dan");
+  std::cout << "Dan's pred :" << std::endl;
+  for (auto iter = le_pred_dan.begin(); iter != le_pred_dan.end(); iter++) {
     std::cout << *iter << std::endl;
   }
 }
