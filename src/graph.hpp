@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 
 namespace graph {
 template <typename N, typename ND, typename Hash, typename Equal>
@@ -15,6 +16,8 @@ struct NodeData {
   NodeData(ND data) : m_data(data), m_succs(), m_preds() {}
   void add_succ(N succ) { m_succs.insert(succ); }
   void add_pred(N pred) { m_preds.insert(pred); }
+  void rm_succ(N succ) { m_succs.erase(succ); }
+  void rm_pred(N pred) { m_preds.erase(pred); }
 };
 
 template <typename N, typename Hash = std::hash<N>>
@@ -104,6 +107,24 @@ struct Graph {
           "add_edge() error : pred or succ missing from m_nodes !");
     }
   }
+  void rm_edge(N pred, N succ) {
+    auto pred_iter = m_nodes.find(pred);
+    auto succ_iter = m_nodes.find(succ);
+    if (pred_iter == m_nodes.end() || succ_iter == m_nodes.end()) {
+      // at least one of the nodes is missing
+      throw std::runtime_error("Graph::rm_edge() error : missing node(s) !");
+    } else {
+      auto edge_iter = m_edges.find(std::make_pair(pred, succ));
+      if (edge_iter != m_edges.end()) {
+        m_edges.erase(edge_iter);
+        pred_iter->second.rm_succ(succ);
+        pred_iter->second.rm_pred(pred);
+      } else {
+        // nodes present, but there's not edge between them
+        throw std::runtime_error("Graph::rm_edge() error : missing edge !");
+      }
+    }
+  }
   bool has_node(const N &node) { return (m_nodes.find(node) != m_nodes.end()); }
   ND &operator[](const N &node) {
     auto node_iter = m_nodes.find(node);
@@ -145,6 +166,8 @@ struct NodeData<N, void, Hash, Equal> {
   NodeData() : m_succs(), m_preds() {}
   void add_succ(N succ) { m_succs.insert(succ); }
   void add_pred(N pred) { m_preds.insert(pred); }
+  void rm_succ(N succ) { m_succs.erase(succ); }
+  void rm_pred(N pred) { m_preds.erase(pred); }
 };
 
 template <typename N, typename ED, typename Hash, typename Equal>
@@ -238,6 +261,24 @@ struct Graph<N, ND, void, Hash, Equal> {
     } else {
       throw std::runtime_error(
           "add_edge() error : pred or succ missing from m_nodes !");
+    }
+  }
+  void rm_edge(N pred, N succ) {
+    auto pred_iter = m_nodes.find(pred);
+    auto succ_iter = m_nodes.find(succ);
+    if (pred_iter == m_nodes.end() || succ_iter == m_nodes.end()) {
+      // at least one of the nodes is missing
+      throw std::runtime_error("Graph::rm_edge() error : missing node(s) !");
+    } else {
+      auto edge_iter = m_edges.find(std::make_pair(pred, succ));
+      if (edge_iter != m_edges.end()) {
+        m_edges.erase(edge_iter);
+        pred_iter->second.rm_succ(succ);
+        pred_iter->second.rm_pred(pred);
+      } else {
+        // nodes present, but there's not edge between them
+        throw std::runtime_error("Graph::rm_edge() error : missing edge !");
+      }
     }
   }
   bool has_node(const N &node) { return (m_nodes.find(node) != m_nodes.end()); }

@@ -94,4 +94,39 @@ namespace pilelivre {
     void rm_friend(std::string name, std::string friend_no_more);
   };
 
+  struct PileLivre_v2 {
+    graph::Graph<std::string, Data*, void> m_content{};
+    std::list<Data*> m_data{}; // make sure we de-allocate properly at destruction of PileLivre_v2 instance
+    std::size_t m_counter_msg{}; // compteur pour les messages
+    std::size_t m_counter_cat{}; // compteur pour les vidéos de chats
+    std::size_t m_counter_friend{}; // compteur pour les actions concernant les amis
+    
+    /*
+    Doesn't do much
+    */
+    PileLivre_v2();
+    ~PileLivre_v2();
+    void add_person(std::string name);
+    /*
+    "action/msg/{counter}"
+    */
+    void add_msg_public(std::string name, std::string msg);
+    /*
+    "action/msg/{counter}"
+    */
+    void add_msg_private(std::string writer, std::string reader, std::string msg);
+    /*
+    "action/cat/{counter}"
+    */
+    void add_cat(std::string name, std::string url);
+    /*
+    "action/friend/{counter}"
+    */
+    void add_friend(std::string name, std::string _friend);
+    /*
+    "action/friend/{counter}"
+    */
+    void rm_friend(std::string name, std::string friend_no_more);
+  };
+
 }
