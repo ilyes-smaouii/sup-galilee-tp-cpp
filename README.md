@@ -18,3 +18,13 @@ with the mistakes that find their way into the given instructions every now and 
 
 ### 2025/09/18
 Finished exo 3, on to exo 4.
+
+### 2025/09/19
+Quick note : I allowed myself some changes to the instructions (some method names, but I also added some of my own),
+as it felt more practical.\
+Update : finished reading exo 6, and I don't feel like the algorithm implentation that's presented for the parse()
+function is actually correct. Might make my own implementation.\
+Update : in theory it should work with the provided examples though, or any exemple, as long as no state has two
+distinct outgoing edges labeled with the same character (because otherwise, if you're looking for that character,
+which corresponding outgoing edge do you actually pick ?). Might just start with that specific implementation, and
+then add my own more complete implementation, if I feel like it.
