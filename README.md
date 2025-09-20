@@ -28,3 +28,8 @@ Update : in theory it should work with the provided examples though, or any exem
 distinct outgoing edges labeled with the same character (because otherwise, if you're looking for that character,
 which corresponding outgoing edge do you actually pick ?). Might just start with that specific implementation, and
 then add my own more complete implementation, if I feel like it.
+
+### 2025/09/20
+Finished exo 6. Had to make some changes, as some instructions were contradictory/couldn't work (for example, I
+needed to add a `m_arcs` member to Automata, because `Graph`'s `m_edges` couldn't support two or edges between
+the same nodes, even if they were associated with different characters/values)
