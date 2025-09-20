@@ -32,7 +32,7 @@ int main(int argc, char *argv[]) {
     if (checks_out) {
       std::cout << "\"" << word << "\"" << " checks out !" << std::endl;
     } else {
-      std::cout << "\""<< word << "\"" << " doesn't check out !" << std::endl;
+      std::cout << "\"" << word << "\"" << " doesn't check out !" << std::endl;
     }
   }
 }
